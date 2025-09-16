@@ -25,4 +25,13 @@ public class TodoService {
         todo.setId(null);
         return todoRepository.save(todo);
     }
+    public Todo update(String id, Todo todo) {
+        Todo existingTodo = todoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo not found"));
+        if (todo.getText() != null) {
+            existingTodo.setText(todo.getText());
+        }
+        existingTodo.setDone(todo.isDone());
+        return todoRepository.save(existingTodo);
+    }
 }
