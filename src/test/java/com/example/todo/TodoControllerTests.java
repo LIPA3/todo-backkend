@@ -2,6 +2,7 @@ package com.example.todo;
 
 import com.example.todo.entity.Todo;
 import com.example.todo.repository.TodoRepository;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,4 +93,24 @@ public class TodoControllerTests {
         mockMvc.perform(request)
                 .andExpect(status().isUnprocessableEntity());
     }
+    @Test
+    void should_response_201_and_server_generate_id_when_create_todo_with_client_sent_id() throws Exception {
+        MockHttpServletRequestBuilder request=post("/todos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                            "id":"client-sent",
+                            "text":"Buy bread",
+                            "done":false
+                        } 
+                        """);
+        mockMvc.perform(request)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(Matchers.not("client-sent")))
+                .andExpect(jsonPath("$.text").value("Buy bread"))
+                .andExpect(jsonPath("$.done").value(false));
+    }
+
+    @Test
+
 }

@@ -22,6 +22,7 @@ public class TodoService {
         if("".equals(todo.getText()) || todo.getText() == null){
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Text is required");
         }
+        todo.setId(null);
         return todoRepository.save(todo);
     }
 }
