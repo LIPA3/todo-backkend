@@ -28,6 +28,9 @@ public class TodoService {
     public Todo update(String id, Todo todo) {
         Todo existingTodo = todoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo not found"));
+        if (todo.getText() == null && todo.isDone() == existingTodo.isDone()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Text is required");
+        }
         if (todo.getText() != null) {
             existingTodo.setText(todo.getText());
         }

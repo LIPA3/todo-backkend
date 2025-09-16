@@ -2,7 +2,6 @@ package com.example.todo;
 
 import com.example.todo.entity.Todo;
 import com.example.todo.repository.TodoRepository;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.not;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -105,7 +105,7 @@ public class TodoControllerTests {
                         """);
         mockMvc.perform(request)
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(Matchers.not("client-sent")))
+                .andExpect(jsonPath("$.id").value(not("client-sent")))
                 .andExpect(jsonPath("$.text").value("Buy bread"))
                 .andExpect(jsonPath("$.done").value(false));
     }
@@ -133,7 +133,7 @@ public class TodoControllerTests {
         Todo todo1=new Todo("123","Buy Milk",false);
         todo1=todoRepository.save(todo1);
         Todo todo2=new Todo("456","Buy bread",false);
-        todo2=todoRepository.save(todo2);
+        todoRepository.save(todo2);
         MockHttpServletRequestBuilder request=put("/todos/"+todo1.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
@@ -153,5 +153,32 @@ public class TodoControllerTests {
         Todo updatedTodo2=todoRepository.findById("456").orElseThrow();
         assert updatedTodo2.getText().equals("Buy bread");
         assert !updatedTodo2.isDone();
+    }
+
+    @Test
+    void should_response_404_when_put_with_non_existing_id() throws Exception {
+        MockHttpServletRequestBuilder request=put("/todos/999")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                            "text":"Buy snacks",
+                            "done":true
+                        } 
+                        """);
+        mockMvc.perform(request)
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_response_422_when_put_with_incomplete_payload() throws Exception {
+        Todo todo=new Todo("123","Buy Milk",false);
+        todo=todoRepository.save(todo);
+        MockHttpServletRequestBuilder request=put("/todos/"+todo.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        { }
+                        """);
+        mockMvc.perform(request)
+                .andExpect(status().isUnprocessableEntity());
     }
 }
