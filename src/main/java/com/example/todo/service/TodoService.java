@@ -1,6 +1,7 @@
 package com.example.todo.service;
 
 import com.example.todo.entity.Todo;
+import com.example.todo.exception.IllegalTodoException;
 import com.example.todo.repository.TodoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,10 @@ public class TodoService {
 
     public Todo update(String id, Todo todo) {
         Todo existingTodo = todoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo not found"));
-        if (todo.getText() == null && todo.isDone() == existingTodo.isDone()) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Text is required");
-        }
+                .orElseThrow(() -> new IllegalTodoException("Todo not found"));
+//        if (todo.getText() == null && todo.isDone() == existingTodo.isDone()) {
+//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Text is required");
+//        }
         if (todo.getText() != null) {
             existingTodo.setText(todo.getText());
         }
@@ -41,7 +42,7 @@ public class TodoService {
 
     public void deleteById(String id) {
         if (!todoRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo not found");
+            throw new IllegalTodoException("Todo not found");
         }
         todoRepository.deleteById(id);
     }

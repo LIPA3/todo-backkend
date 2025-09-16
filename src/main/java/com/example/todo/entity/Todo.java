@@ -15,6 +15,7 @@ import java.util.UUID;
 public class Todo {
     @Id
     private String id;
+    @NotBlank(message = "Text cannot be blank")
     private String text;
     private boolean done;
     public Todo(String id, String text, boolean done) {
