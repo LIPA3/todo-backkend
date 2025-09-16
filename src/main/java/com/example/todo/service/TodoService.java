@@ -38,6 +38,7 @@ public class TodoService {
         existingTodo.setDone(todo.isDone());
         return todoRepository.save(existingTodo);
     }
+
     public void deleteById(String id) {
         if (!todoRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo not found");
