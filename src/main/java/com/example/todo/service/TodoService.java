@@ -19,7 +19,7 @@ public class TodoService {
         return todoRepository.findAll();
     }
     public Todo create(Todo todo) {
-        if("".equals(todo.getText())) {
+        if("".equals(todo.getText()) || todo.getText() == null){
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Text is required");
         }
         return todoRepository.save(todo);

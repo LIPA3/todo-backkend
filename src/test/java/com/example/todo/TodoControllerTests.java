@@ -81,4 +81,15 @@ public class TodoControllerTests {
         mockMvc.perform(request)
                 .andExpect(status().isUnprocessableEntity());
     }
+
+    @Test
+    void should_response_422_when_create_todo_with_no_text() throws Exception {
+        MockHttpServletRequestBuilder request = post("/todos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        { "done": false }
+                        """);
+        mockMvc.perform(request)
+                .andExpect(status().isUnprocessableEntity());
+    }
 }
