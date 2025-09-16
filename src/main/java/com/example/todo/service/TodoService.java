@@ -25,6 +25,7 @@ public class TodoService {
         todo.setId(null);
         return todoRepository.save(todo);
     }
+
     public Todo update(String id, Todo todo) {
         Todo existingTodo = todoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo not found"));
@@ -36,5 +37,11 @@ public class TodoService {
         }
         existingTodo.setDone(todo.isDone());
         return todoRepository.save(existingTodo);
+    }
+    public void deleteById(String id) {
+        if (!todoRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Todo not found");
+        }
+        todoRepository.deleteById(id);
     }
 }
