@@ -2,7 +2,9 @@ package com.example.todo.service;
 
 import com.example.todo.entity.Todo;
 import com.example.todo.repository.TodoRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -15,5 +17,11 @@ public class TodoService {
     }
     public List<Todo> index() {
         return todoRepository.findAll();
+    }
+    public Todo create(Todo todo) {
+        if("".equals(todo.getText())) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Text is required");
+        }
+        return todoRepository.save(todo);
     }
 }

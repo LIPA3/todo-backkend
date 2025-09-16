@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,6 +49,36 @@ public class TodoControllerTests {
                 .andExpect(jsonPath("$[0].id").exists())
                 .andExpect(jsonPath("$[0].text").value("Buy Milk"))
                 .andExpect(jsonPath("$[0].done").value(false));
+    }
 
+    @Test
+    void should_response_201_when_create_todo() throws Exception {
+        MockHttpServletRequestBuilder request=post("/todos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                            "text":"Buy Milk",
+                            "done":false
+                        } 
+                        """);
+        mockMvc.perform(request)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.text").value("Buy Milk"))
+                .andExpect(jsonPath("$.done").value(false));
+    }
+
+    @Test
+    void should_response_422_when_create_todo_with_empty_text() throws Exception {
+        MockHttpServletRequestBuilder request=post("/todos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                        {
+                            "text":"",
+                            "done":false
+                        } 
+                        """);
+        mockMvc.perform(request)
+                .andExpect(status().isUnprocessableEntity());
     }
 }
